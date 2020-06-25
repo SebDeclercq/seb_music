@@ -1,0 +1,13 @@
+language: python
+python:
+    - '3.8'
+before_script:
+    - pip install pipenv
+    - pipenv install --dev
+env:
+    - DJANGO_SETTINGS_MODULE='qwant_music.settings'
+script:
+    - pipenv run pytest
+branches:
+    only:
+        - master
