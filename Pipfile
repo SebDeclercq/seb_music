@@ -19,6 +19,7 @@ markdown = "*"
 django-filter = "*"
 django-heroku = "*"
 requests = "*"
+gunicorn = "*"
 
 [requires]
 python_version = "3.8"
