@@ -89,10 +89,11 @@ class Artist(models.Model):
     @staticmethod
     def name_to_slug(name: str) -> str:
         '''Create the slug based on the artist name.
-        1. Normalize by removing diacritics
-        2. Pass the string to lower
-        3. Remove non expected characters
-        4. Remove multiple dashes
+        1. Clean special characters from the Api.SPECIAL_CHARS
+        2. Normalize by removing diacritics
+        3. Pass the string to lower
+        4. Remove non expected characters
+        5. Remove multiple dashes
 
         Params:
             name: The name to convert to slug
@@ -100,6 +101,8 @@ class Artist(models.Model):
         Returns:
             The formatted slug
         '''
+        for special_char in SpecialChar.objects.all():
+            name = name.replace(special_char.orig, special_char.dest)
         name: str = (
             normalize('NFKD', name).encode('ascii', 'ignore').decode()
         )
@@ -107,3 +110,21 @@ class Artist(models.Model):
         name = re.sub(r'[^-\w]', '', name)
         name = re.sub(r'-+', '-', name)
         return name
+
+
+class SpecialChar(models.Model):
+    '''Class handling special character to convert in order to create
+    the slug from an artist name (example: Møme => Mome).
+
+    Attributes:
+        orig: The character to convert (example: 'ø')
+        dest: The character to convert to (example: 'o')
+    '''
+
+    orig: models.CharField = models.CharField(
+        _('Origin character'), max_length=50, blank=False, unique=True
+    )
+    dest: models.CharField = models.CharField(
+        _('Destination character'), max_length=50, blank=False, unique=True
+    )
+

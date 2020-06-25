@@ -5,7 +5,7 @@ Author: SebDeclercq (https://www.github.com/SebDeclercq)
 '''
 from typing import List, Sequence, Tuple
 import pytest
-from qwant.music.models import Artist
+from qwant.music.models import Artist, SpecialChar
 from qwant.music.types import APIData
 
 
@@ -36,6 +36,7 @@ names_and_slugs: Sequence[Tuple[str, str]] = (
     ('Satin- -Jackets', 'satin-jackets'),
     ('==hel++lo==', 'hello'),
     ('Blank & Jones', 'blank-jones'),
+    ('Møme', 'mome'),
 )
 
 
@@ -70,6 +71,8 @@ class TestArtist:
             artist.get_absolute_url() == f'/qwant/music/artist/id/{artist.pk}'
         )
 
+    @pytest.mark.django_db
     @pytest.mark.parametrize('name, slug', names_and_slugs)
-    def test_name_to_slug(self, name: str, slug: str) -> None:
+    def test_to_slug(self, name: str, slug: str) -> None:
+        SpecialChar.objects.create(orig='ø', dest='o')
         assert Artist.name_to_slug(name) == slug
