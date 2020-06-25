@@ -3,7 +3,7 @@
 Test module for the Artist class handling the Qwant API response.
 Author: SebDeclercq (https://www.github.com/SebDeclercq)
 '''
-from typing import List
+from typing import List, Sequence, Tuple
 import pytest
 from qwant.music.models import Artist
 from qwant.music.types import APIData
@@ -26,6 +26,17 @@ API_DATA: List[APIData] = [
         'similar_artists': [],
     },
 ]
+
+
+names_and_slugs: Sequence[Tuple[str, str]] = (
+    ('hello', 'hello'),
+    ('Hello', 'hello'),
+    ('Hello World', 'hello-world'),
+    ('Tiësto', 'tiesto'),
+    ('Satin- -Jackets', 'satin-jackets'),
+    ('==hel++lo==', 'hello'),
+    ('Blank & Jones', 'blank-jones'),
+)
 
 
 class TestArtist:
@@ -58,3 +69,7 @@ class TestArtist:
         assert (
             artist.get_absolute_url() == f'/qwant/music/artist/id/{artist.pk}'
         )
+
+    @pytest.mark.parametrize('name, slug', names_and_slugs)
+    def test_name_to_slug(self, name: str, slug: str) -> None:
+        assert Artist.name_to_slug(name) == slug

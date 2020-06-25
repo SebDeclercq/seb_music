@@ -5,6 +5,8 @@ Author: SebDeclercq (https://www.github.com/SebDeclercq)
 '''
 from __future__ import annotations
 from typing import Dict
+from unicodedata import normalize
+import re
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext as _
@@ -83,3 +85,25 @@ class Artist(models.Model):
 
     def get_absolute_url(self):
         return reverse('qwant:artist_detail', kwargs={'pk': self.pk})
+
+    @staticmethod
+    def name_to_slug(name: str) -> str:
+        '''Create the slug based on the artist name.
+        1. Normalize by removing diacritics
+        2. Pass the string to lower
+        3. Remove non expected characters
+        4. Remove multiple dashes
+
+        Params:
+            name: The name to convert to slug
+
+        Returns:
+            The formatted slug
+        '''
+        name: str = (
+            normalize('NFKD', name).encode('ascii', 'ignore').decode()
+        )
+        name = re.sub(r'\s+', '-', name.lower())
+        name = re.sub(r'[^-\w]', '', name)
+        name = re.sub(r'-+', '-', name)
+        return name
