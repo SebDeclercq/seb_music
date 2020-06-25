@@ -1,0 +1,9 @@
+{% if artists %}
+<ul>
+    {% for artist in artists %}
+    <li><a href="{% url 'qwant:artist_detail' artist.id %}">{{ artist.name }}</li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No artist yet</p>
+{% endif %}
