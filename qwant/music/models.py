@@ -10,6 +10,7 @@ import re
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext as _
+from qwant.music.api import API
 from qwant.music.types import APIData
 
 
@@ -39,6 +40,20 @@ class Artist(models.Model):
         verbose_name_plural: str = _('artists')
 
     @classmethod
+    def create_from_api(cls, name: str) -> Artist:
+        '''Gather data from the Qwant Music API.
+
+        Params:
+            name: The artist name to find
+        
+        Returns:
+            The Artist found
+        '''
+        slug: str = cls.name_to_slug(name)
+        data: APIData = API.get(slug)
+        return cls.create_from_api_data(**data)
+
+    @classmethod
     def create_from_api_data(cls, **data: APIData) -> Artist:
         '''Parse the data provided by the Qwant Music API to
         create a new Artist.
@@ -51,7 +66,7 @@ class Artist(models.Model):
         '''
         artist: Artist
         artist, _ = Artist.objects.get_or_create(
-            name=data['name'], slug=data['slug'], api_id=data['id']
+            name=data['name'], slug=data['slug'], api_id=int(data['id'])
         )
         if similar_artists := data.get('similar_artists'):
             for similar_artist in similar_artists:
@@ -75,7 +90,7 @@ class Artist(models.Model):
         sim, _ = Artist.objects.get_or_create(
             name=similar_artist['name'],
             slug=similar_artist['slug'],
-            api_id=similar_artist['id'],
+            api_id=int(similar_artist['id']),
         )
         artist.similar_artists.add(sim)
         return artist

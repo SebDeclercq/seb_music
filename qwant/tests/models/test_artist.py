@@ -40,10 +40,35 @@ names_and_slugs: Sequence[Tuple[str, str]] = (
 )
 
 
+names_and_data: Sequence[Tuple[str, APIData]] = (
+    (
+        'Goldroom',
+        {
+            'slug': 'goldroom',
+            'id': 260920179,
+            'similar_artist_name': 'Satin Jackets',
+        },
+    ),
+    (
+        'Satin Jackets',
+        {
+            'slug': 'satin-jackets',
+            'id': 441748199,
+            'similar_artist_name': 'Goldroom',
+        },
+    ),
+)
+
+
+@pytest.fixture(autouse=True)
+def special_char() -> SpecialChar:
+    return SpecialChar.objects.create(orig='ø', dest='o')
+
+
 class TestArtist:
     @pytest.mark.django_db
     @pytest.mark.parametrize('data', API_DATA)
-    def test_init(self, data: APIData) -> None:
+    def test_create_from_api_data(self, data: APIData) -> None:
         artist: Artist = Artist.create_from_api_data(**data)
         assert artist.name == data['name']
         assert artist.slug == data['slug']
@@ -66,7 +91,6 @@ class TestArtist:
     @pytest.mark.parametrize('data', API_DATA)
     def test_absolute_url(self, data: APIData) -> None:
         artist: Artist = Artist.create_from_api_data(**data)
-        artist.save()
         assert (
             artist.get_absolute_url() == f'/qwant/music/artist/id/{artist.pk}'
         )
@@ -74,5 +98,16 @@ class TestArtist:
     @pytest.mark.django_db
     @pytest.mark.parametrize('name, slug', names_and_slugs)
     def test_to_slug(self, name: str, slug: str) -> None:
-        SpecialChar.objects.create(orig='ø', dest='o')
         assert Artist.name_to_slug(name) == slug
+
+    @pytest.mark.real_api_call
+    @pytest.mark.django_db
+    @pytest.mark.parametrize('name,data', names_and_data)
+    def test_create_from_api(self, name: str, data: APIData) -> None:
+        artist: Artist = Artist.create_from_api(name)
+        assert artist.name == name
+        assert artist.slug == data['slug']
+        assert artist.api_id == data['id']
+        assert data['similar_artist_name'] in [
+            sim.name for sim in artist.similar_artists.all()
+        ]
