@@ -15,8 +15,8 @@ API_DATA: List[APIData] = [
         'slug': 'artist-1',
         'id': 123456,
         'similar_artists': [
-            {'name': 'Similar-1', 'slug': 'similar-1', 'id': '789123'},
-            {'name': 'Similar-2', 'slug': 'similar-2', 'id': '147258'},
+            {'name': 'Similar-1', 'slug': 'similar-1', 'id': 789123},
+            {'name': 'Similar-2', 'slug': 'similar-2', 'id': 147258},
         ],
     },
     {
@@ -29,12 +29,26 @@ API_DATA: List[APIData] = [
 
 
 class TestArtist:
+    @pytest.mark.django_db
     @pytest.mark.parametrize('data', API_DATA)
     def test_init(self, data: APIData) -> None:
         artist: Artist = Artist.create_from_api_data(**data)
         assert artist.name == data['name']
         assert artist.slug == data['slug']
         assert artist.api_id == data['id']
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize('data', API_DATA)
+    def test_similar_artists(self, data: APIData) -> None:
+        artist: Artist = Artist.create_from_api_data(**data)
+        for similar_artist in artist.similar_artists.all():
+            assert isinstance(similar_artist, Artist)
+            assert similar_artist.name in [
+                sim['name'] for sim in data['similar_artists']
+            ]
+            assert similar_artist.api_id in [
+                sim['id'] for sim in data['similar_artists']
+            ]
 
     @pytest.mark.django_db
     @pytest.mark.parametrize('data', API_DATA)
