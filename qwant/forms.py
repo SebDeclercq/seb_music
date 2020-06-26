@@ -22,3 +22,6 @@ class SearchForm(forms.Form):
             The asked for Artist.
         '''
         return ArtistManager.search_or_add(self.cleaned_data['artist_name'])
+
+    def reload(self) -> Artist:
+        return ArtistManager.add(self.cleaned_data['artist_name'])

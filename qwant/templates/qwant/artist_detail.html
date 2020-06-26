@@ -3,6 +3,12 @@
 {% block page_content %}
 <h1>{{ artist.name }}</h1>
 <img src="{{ artist.picture }}" alt="no picture"/>
+<div>
+    <form action="{% url 'qwant:artist_reload' %}" method="POST">
+    {% csrf_token %}
+    <input type="hidden" id="id_artist_name" name="artist_name" value="{{ artist.slug }}"/>
+    <input type="submit" value="Refresh">
+</div>
 <ul>
     <li><a href="{{ artist.qwant_url }}" target="_blank">{{ artist.qwant_url }}</a></li>
     {% if artist.similar_artists.all %}

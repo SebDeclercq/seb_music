@@ -25,4 +25,15 @@ class ArtistManager:
             artist_slug: str = Artist.name_to_slug(artist_name)
             return Artist.objects.get(slug=artist_slug)
         except Artist.DoesNotExist:
-            return Artist.create_from_api(artist_name)
+            return ArtistManager.add(artist_name)
+
+    def add(artist_name: str) -> Artist:
+        '''Call the API to retrieve the Artist
+        
+        Params:
+            artist_name: The Artist to find
+
+        Returns:
+            the found Artist
+        '''
+        return Artist.create_from_api(artist_name)

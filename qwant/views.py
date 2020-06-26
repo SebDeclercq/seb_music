@@ -33,3 +33,15 @@ class ArtistSearchView(FormView):
 
     def get_success_url(self) -> HttpResponse:
         return reverse('qwant:artist_detail', kwargs={'pk': self.artist.pk})
+
+
+class ArtistReloadView(FormView):
+    template_name: str = 'qwant/artist_search.html'
+    form_class: Type[SearchForm] = SearchForm
+
+    def form_valid(self, form: SearchForm) -> HttpResponse:
+        self.artist: Artist = form.reload()
+        return super().form_valid(form)
+
+    def get_success_url(self) -> HttpResponse:
+        return reverse('qwant:artist_detail', kwargs={'pk': self.artist.pk})

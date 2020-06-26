@@ -52,3 +52,16 @@ class TestArtistSearch:
         assert resp.status_code == 200
         assert 'qwant/artist_detail.html' in resp.template_name
 
+
+class TestArtistReload:
+    @pytest.mark.real_api_call
+    @pytest.mark.django_db
+    def test_reload_artist(self) -> None:
+        client: Client = Client()
+        resp: HttpResponse = client.post(
+            reverse('qwant:artist_reload'),
+            {'artist_name': 'Moby'},
+            follow=True,
+        )
+        assert resp.status_code == 200
+        assert 'qwant/artist_detail.html' in resp.template_name
