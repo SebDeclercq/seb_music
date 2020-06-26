@@ -1,3 +1,6 @@
+{% extends 'qwant/base.html' %}
+
+{% block page_content %}
 {% if artists %}
 <ul>
     {% for artist in artists %}
@@ -7,3 +10,4 @@
 {% else %}
 <p>No artist yet</p>
 {% endif %}
+{% endblock %}

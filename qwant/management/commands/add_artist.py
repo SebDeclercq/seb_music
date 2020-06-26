@@ -10,19 +10,7 @@ from django.core.management.base import (
     CommandParser,
 )
 from qwant.music.models import Artist
-
-
-class ArtistCLIManager:
-    '''Add a new artist from the command line.'''
-
-    @staticmethod
-    def add(artist_name: str) -> Artist:
-        '''Main method of ArtistCLIManager.
-    
-        Returns:
-            The inserted Artist
-        '''
-        return Artist.create_from_api(artist_name)
+from qwant.music.utils import ArtistManager
 
 
 class Command(BaseCommand):
@@ -36,6 +24,6 @@ class Command(BaseCommand):
     def handle(self, *args: Any, **options: Any) -> None:
         try:
             artist_name = options['name']
-            ArtistCLIManager.add(artist_name)
+            ArtistManager.add(artist_name)
         except KeyError:
             raise CommandError('Provide an artist name w/ -n or --name')

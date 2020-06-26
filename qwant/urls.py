@@ -19,4 +19,9 @@ urlpatterns: List[URLPattern] = [
         views.ArtistsListView.as_view(),
         name=_('artists_list'),
     ),
+    path(
+        _('music/artist/search/'),
+        views.ArtistSearchView.as_view(),
+        name=_('artist_search'),
+    ),
 ]

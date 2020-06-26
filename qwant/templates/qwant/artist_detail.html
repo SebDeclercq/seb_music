@@ -1,3 +1,6 @@
+{% extends 'qwant/base.html' %}
+
+{% block page_content %}
 <h1>{{ artist.name }}</h1>
 <img src="{{ artist.picture }}" alt="no picture"/>
 <ul>
@@ -11,7 +14,7 @@
         </ul>
     </li>
     {% else %}
-    <li><emph>No similar artist found</emph></li>
+    <li><strong>No similar artist found</strong></li>
     {% endif %}
-
 </ul>
+{% endblock %}
