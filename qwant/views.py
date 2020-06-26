@@ -18,9 +18,10 @@ class ArtistDetailView(generic.DetailView):
 class ArtistsListView(generic.ListView):
     template_name: str = 'qwant/artists_list.html'
     context_object_name: str = _('artists')
+    paginate_by: int = 10
 
     def get_queryset(self) -> Manager[Artist]:
-        return Artist.objects.all()
+        return Artist.objects.all().order_by('name')
 
 
 class ArtistSearchView(FormView):
