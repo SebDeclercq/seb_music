@@ -7,7 +7,7 @@ from __future__ import annotations
 from typing import Dict
 from unicodedata import normalize
 import re
-from django.db import models
+from django.db import IntegrityError, models
 from django.urls import reverse
 from django.utils.translation import gettext as _
 from qwant.music.api import API
@@ -28,6 +28,9 @@ class Artist(models.Model):
         _('Name'), max_length=255, blank=False
     )
     slug: models.SlugField = models.SlugField(_('Slug'), unique=True)
+    picture: models.URLField = models.URLField(
+        _('Picture'), max_length=1000, blank=True, null=True
+    )
     api_id: models.IntegerField = models.IntegerField(
         _('Qwant API id'), unique=True
     )
@@ -65,8 +68,13 @@ class Artist(models.Model):
             Artist: the created instance
         '''
         artist: Artist
-        artist, _ = Artist.objects.get_or_create(
-            name=data['name'], slug=data['slug'], api_id=int(data['id'])
+        artist, _ = Artist.objects.update_or_create(
+            api_id=int(data['id']),
+            defaults={
+                'name': data['name'],
+                'slug': data['slug'],
+                'picture': data.get('picture', ''),
+            },
         )
         if similar_artists := data.get('similar_artists'):
             for similar_artist in similar_artists:
@@ -86,13 +94,11 @@ class Artist(models.Model):
         Returns:
             Artist: The updated Artist
         '''
-        sim: Artist
-        sim, _ = Artist.objects.get_or_create(
-            name=similar_artist['name'],
-            slug=similar_artist['slug'],
-            api_id=int(similar_artist['id']),
-        )
-        artist.similar_artists.add(sim)
+        sim: Artist = cls.create_from_api_data(**similar_artist)
+        try:
+            artist.similar_artists.add(sim)
+        except IntegrityError:  # many-to-many relation already exists
+            pass
         return artist
 
     def __str__(self):
@@ -100,6 +106,10 @@ class Artist(models.Model):
 
     def get_absolute_url(self):
         return reverse('qwant:artist_detail', kwargs={'pk': self.pk})
+
+    @property
+    def qwant_url(self) -> str:
+        return API.BASE_URL.replace('api', 'www') + self.slug
 
     @staticmethod
     def name_to_slug(name: str) -> str:

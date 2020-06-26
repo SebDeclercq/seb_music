@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import Type
 from django.db.models import Manager
 from django.shortcuts import render
 from django.utils.translation import gettext as _
@@ -7,7 +8,7 @@ from qwant.music.models import Artist
 
 
 class ArtistDetailView(generic.DetailView):
-    model: type = Artist
+    model: Type[Artist] = Artist
     template_name: str = 'qwant/artist_detail.html'
 
 

@@ -1,5 +1,17 @@
 <h1>{{ artist.name }}</h1>
+<img src="{{ artist.picture }}" alt="no picture"/>
 <ul>
-    <li>Slug: {{ artist.slug }}</li>
-    <li>API ID: {{ artist.api_id }}</li>
+    <li><a href="{{ artist.qwant_url }}" target="_blank">{{ artist.qwant_url }}</a></li>
+    {% if artist.similar_artists|length > 0 %}
+    <li>Similar artists:</li>
+        <ul>
+            {% for sim in artist.similar_artists.all %}
+            <li><a href="{% url 'qwant:artist_detail' sim.id %}">{{ sim.name }}</a></li>
+            {% endfor %}
+        </ul>
+    </li>
+    {% else %}
+    <li><emph>No similar artist found</emph></li>
+    {% endif %}
+
 </ul>

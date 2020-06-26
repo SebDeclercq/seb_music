@@ -18,6 +18,7 @@ API_DATA: List[APIData] = [
             {'name': 'Similar-1', 'slug': 'similar-1', 'id': 789123},
             {'name': 'Similar-2', 'slug': 'similar-2', 'id': 147258},
         ],
+        'picture': 'http://www.example.org/pic1',
     },
     {
         'name': 'Artist-2',
@@ -72,7 +73,9 @@ class TestArtist:
         artist: Artist = Artist.create_from_api_data(**data)
         assert artist.name == data['name']
         assert artist.slug == data['slug']
+        assert artist.picture == data.get('picture', '')
         assert artist.api_id == data['id']
+        assert artist.qwant_url.endswith(data['slug'])
 
     @pytest.mark.django_db
     @pytest.mark.parametrize('data', API_DATA)
@@ -111,3 +114,5 @@ class TestArtist:
         assert data['similar_artist_name'] in [
             sim.name for sim in artist.similar_artists.all()
         ]
+        if artist.picture:
+            assert artist.picture.startswith('http')
