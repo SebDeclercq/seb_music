@@ -24,6 +24,6 @@ class Command(BaseCommand):
     def handle(self, *args: Any, **options: Any) -> None:
         try:
             artist_name = options['name']
-            ArtistManager.add(artist_name)
+            ArtistManager.search_or_add(artist_name)
         except KeyError:
             raise CommandError('Provide an artist name w/ -n or --name')

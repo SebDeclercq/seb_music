@@ -7,13 +7,22 @@ from qwant.music.models import Artist
 
 
 class ArtistManager:
-    '''Add a new artist.'''
+    '''Manage actions with the Artist model.'''
 
     @staticmethod
-    def add(artist_name: str) -> Artist:
-        '''Main method of ArtistCLIManager.
-    
+    def search_or_add(artist_name: str) -> Artist:
+        '''Get one Artist data from the API.
+        1. Check if the Artist is already in database and return it if it does
+        2. Call the API otherwise.
+ 
+        Params:
+            artist_name: The name of the Artist to find
+
         Returns:
-            The inserted Artist
+            The found Artist
         '''
-        return Artist.create_from_api(artist_name)
+        try:
+            artist_slug: str = Artist.name_to_slug(artist_name)
+            return Artist.objects.get(slug=artist_slug)
+        except Artist.DoesNotExist:
+            return Artist.create_from_api(artist_name)

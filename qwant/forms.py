@@ -21,4 +21,4 @@ class SearchForm(forms.Form):
         Returns:
             The asked for Artist.
         '''
-        return ArtistManager.add(self.cleaned_data['artist_name'])
+        return ArtistManager.search_or_add(self.cleaned_data['artist_name'])
