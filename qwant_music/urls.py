@@ -15,12 +15,19 @@ Including another URLconf
 """
 from typing import List
 from django.contrib import admin
-from django.urls import include, path
+from django.urls import include, path, reverse_lazy
 from django.urls.resolvers import URLPattern
 from django.utils.translation import gettext as _
+from django.views.generic import RedirectView
 
 
 urlpatterns: List[URLPattern] = [
     path(_('admin/'), admin.site.urls),
     path(_('qwant/'), include('qwant.urls'),),
+    path(
+        '',
+        RedirectView.as_view(
+            url=reverse_lazy('qwant:artists_list'), permanent=True
+        ),
+    ),
 ]
