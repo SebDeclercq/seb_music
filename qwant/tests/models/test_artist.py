@@ -116,3 +116,9 @@ class TestArtist:
         ]
         if artist.picture:
             assert artist.picture.startswith('http')
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize('data', API_DATA)
+    def test_str_slug(self, data: APIData) -> None:
+        artist: Artist = Artist.create_from_api_data(**data)
+        assert str(artist) == artist.slug
