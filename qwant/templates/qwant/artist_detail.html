@@ -2,7 +2,7 @@
 <img src="{{ artist.picture }}" alt="no picture"/>
 <ul>
     <li><a href="{{ artist.qwant_url }}" target="_blank">{{ artist.qwant_url }}</a></li>
-    {% if artist.similar_artists|length > 0 %}
+    {% if artist.similar_artists.all %}
     <li>Similar artists:</li>
         <ul>
             {% for sim in artist.similar_artists.all %}

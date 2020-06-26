@@ -18,7 +18,7 @@ class ArtistCLIManager:
     @staticmethod
     def add(artist_name: str) -> Artist:
         '''Main method of ArtistCLIManager.
-        
+    
         Returns:
             The inserted Artist
         '''

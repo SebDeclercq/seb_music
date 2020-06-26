@@ -7,7 +7,7 @@ from __future__ import annotations
 from typing import Dict
 from unicodedata import normalize
 import re
-from django.db import IntegrityError, models
+from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext as _
 from qwant.music.api import API
@@ -95,10 +95,7 @@ class Artist(models.Model):
             Artist: The updated Artist
         '''
         sim: Artist = cls.create_from_api_data(**similar_artist)
-        try:
-            artist.similar_artists.add(sim)
-        except IntegrityError:  # many-to-many relation already exists
-            pass
+        artist.similar_artists.add(sim)
         return artist
 
     def __str__(self):

@@ -18,4 +18,3 @@ class ArtistsListView(generic.ListView):
 
     def get_queryset(self) -> Manager[Artist]:
         return Artist.objects.all()
-
