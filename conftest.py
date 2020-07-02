@@ -1,6 +1,4 @@
-from typing import List
 from _pytest.config.argparsing import Parser
-from _pytest.config.exceptions import UsageError
 from _pytest.python import Function
 import pytest
 
@@ -10,7 +8,7 @@ def pytest_addoption(parser: Parser) -> None:
         '--api_call',
         action='store',
         default='on',
-        help='Run the real API calls only: on/off (default: on)',
+        help='Run the API calls along the other tests: on/off (default: on)',
     )
     parser.addoption(
         '--current',
