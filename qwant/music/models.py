@@ -4,7 +4,7 @@ Module containing the models which collect and use the Qwant Music API data.
 Author: SebDeclercq (https://www.github.com/SebDeclercq)
 '''
 from __future__ import annotations
-from typing import Dict
+from typing import Dict, Sequence
 from unicodedata import normalize
 import re
 from django.db import models
@@ -150,6 +150,24 @@ class Artist(models.Model):
             return Artist.objects.get(slug=artist_slug)
         except Artist.DoesNotExist:
             return Artist.create_from_api(artist_name)
+
+    def path_to(self, other: Artist, nb_try: int = 1) -> Sequence[Artist]:
+        if self._has_direct_relation_with(other):
+            return (self, other)
+        else:
+            self._counter = 0
+            return self._search_relation(other, nb_try)
+
+    def _has_direct_relation_with(self, other: Artist) -> bool:
+        return any(
+            a.api_id == other.api_id for a in self.similar_artists.all()
+        )
+
+    def _search_relation(self, other: Artist, nb_try: int) -> Sequence[Artist]:
+        for sim in self.similar_artists.all():
+            if sim._has_direct_relation_with(other):
+                return (self, sim, other)
+        return ()
 
 
 class SpecialChar(models.Model):

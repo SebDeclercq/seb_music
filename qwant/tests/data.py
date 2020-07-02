@@ -23,6 +23,39 @@ API_DATA: List[APIData] = [
         'id': 456789,
         'similar_artists': [],
     },
+    {
+        'name': 'Artist-3',
+        'slug': 'artist-3',
+        'id': 654321,
+        'similar_artists': [
+            {'name': 'Artist-4', 'slug': 'artist-4', 'id': 987654},
+            {'name': 'Artist-5', 'slug': 'artist-5', 'id': 876543},
+        ],
+    },
+    {
+        'name': 'Artist-4',
+        'slug': 'artist-4',
+        'id': 987654,
+        'similar_artists': [
+            {'name': 'Artist-3', 'slug': 'artist-3', 'id': 654321},
+        ],
+    },
+    {
+        'name': 'Artist-5',
+        'slug': 'artist-5',
+        'id': 876543,
+        'similar_artists': [
+            {'name': 'Artist-3', 'slug': 'artist-3', 'id': 654321},
+        ],
+    },
+    {
+        'name': 'Artist-6',
+        'slug': 'artist-6',
+        'id': 345678,
+        'similar_artists': [
+            {'name': 'Artist-4', 'slug': 'artist-4', 'id': 987654},
+        ],
+    },
 ]
 
 
@@ -61,4 +94,3 @@ NAMES_AND_ID: Sequence[Tuple[str, int]] = (
     ('Goldroom', 260920179),
     ('Satin Jackets', 441748199),
 )
-
