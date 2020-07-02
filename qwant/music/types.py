@@ -1,3 +1,5 @@
-from typing import Dict, List, Union
+from typing import List, Mapping, Union
 
-APIData = Dict[str, Union[str, List[Dict[str, Union[int, str]]]]]  # Type alias
+APIData = Mapping[
+    str, Union[int, str, List[Mapping[str, Union[int, str]]]]
+]  # Type alias

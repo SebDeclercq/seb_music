@@ -3,67 +3,10 @@
 Test module for the Artist class handling the Qwant API response.
 Author: SebDeclercq (https://www.github.com/SebDeclercq)
 '''
-from typing import List, Sequence, Tuple
 import pytest
 from qwant.music.models import Artist, SpecialChar
 from qwant.music.types import APIData
-
-
-API_DATA: List[APIData] = [
-    {
-        'name': 'Artist-1',
-        'slug': 'artist-1',
-        'id': 123456,
-        'similar_artists': [
-            {'name': 'Similar-1', 'slug': 'similar-1', 'id': 789123},
-            {'name': 'Similar-2', 'slug': 'similar-2', 'id': 147258},
-        ],
-        'picture': 'http://www.example.org/pic1',
-    },
-    {
-        'name': 'Artist-2',
-        'slug': 'artist-2',
-        'id': 456789,
-        'similar_artists': [],
-    },
-]
-
-
-names_and_slugs: Sequence[Tuple[str, str]] = (
-    ('hello', 'hello'),
-    ('Hello', 'hello'),
-    ('Hello World', 'hello-world'),
-    ('Tiësto', 'tiesto'),
-    ('Satin- -Jackets', 'satin-jackets'),
-    ('==hel++lo==', 'hello'),
-    ('Blank & Jones', 'blank-jones'),
-    ('Møme', 'mome'),
-)
-
-
-names_and_data: Sequence[Tuple[str, APIData]] = (
-    (
-        'Goldroom',
-        {
-            'slug': 'goldroom',
-            'id': 260920179,
-            'similar_artist_name': 'Satin Jackets',
-        },
-    ),
-    (
-        'Satin Jackets',
-        {
-            'slug': 'satin-jackets',
-            'id': 441748199,
-            'similar_artist_name': 'Goldroom',
-        },
-    ),
-)
-
-names_and_id: Sequence[Tuple[str, int]] = (
-    ('Goldroom', 260920179),
-    ('Satin Jackets', 441748199),
-)
+from qwant.tests import data
 
 
 @pytest.fixture(autouse=True)
@@ -73,7 +16,7 @@ def special_char() -> SpecialChar:
 
 class TestArtist:
     @pytest.mark.django_db
-    @pytest.mark.parametrize('data', API_DATA)
+    @pytest.mark.parametrize('data', data.API_DATA)
     def test_create_from_api_data(self, data: APIData) -> None:
         artist: Artist = Artist.create_from_api_data(**data)
         assert artist.name == data['name']
@@ -83,7 +26,7 @@ class TestArtist:
         assert artist.qwant_url.endswith(data['slug'])
 
     @pytest.mark.django_db
-    @pytest.mark.parametrize('data', API_DATA)
+    @pytest.mark.parametrize('data', data.API_DATA)
     def test_similar_artists(self, data: APIData) -> None:
         artist: Artist = Artist.create_from_api_data(**data)
         for similar_artist in artist.similar_artists.all():
@@ -96,7 +39,7 @@ class TestArtist:
             ]
 
     @pytest.mark.django_db
-    @pytest.mark.parametrize('data', API_DATA)
+    @pytest.mark.parametrize('data', data.API_DATA)
     def test_absolute_url(self, data: APIData) -> None:
         artist: Artist = Artist.create_from_api_data(**data)
         assert (
@@ -104,13 +47,13 @@ class TestArtist:
         )
 
     @pytest.mark.django_db
-    @pytest.mark.parametrize('name, slug', names_and_slugs)
+    @pytest.mark.parametrize('name, slug', data.NAMES_AND_SLUGS)
     def test_to_slug(self, name: str, slug: str) -> None:
         assert Artist.name_to_slug(name) == slug
 
     @pytest.mark.real_api_call
     @pytest.mark.django_db
-    @pytest.mark.parametrize('name,data', names_and_data)
+    @pytest.mark.parametrize('name,data', data.NAMES_AND_DATA)
     def test_create_from_api(self, name: str, data: APIData) -> None:
         artist: Artist = Artist.create_from_api(name)
         assert artist.name == name
@@ -123,13 +66,13 @@ class TestArtist:
             assert artist.picture.startswith('http')
 
     @pytest.mark.django_db
-    @pytest.mark.parametrize('data', API_DATA)
+    @pytest.mark.parametrize('data', data.API_DATA)
     def test_str_slug(self, data: APIData) -> None:
         artist: Artist = Artist.create_from_api_data(**data)
         assert str(artist) == artist.slug
 
     @pytest.mark.real_api_call
     @pytest.mark.django_db
-    @pytest.mark.parametrize('name,api_id', names_and_id)
+    @pytest.mark.parametrize('name,api_id', data.NAMES_AND_ID)
     def test_get_one(self, name: str, api_id: int) -> None:
         assert Artist.search_or_add(name).api_id == api_id
