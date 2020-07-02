@@ -79,7 +79,6 @@ class TestArtist:
         assert Artist.search_or_add(name).api_id == api_id
 
     @pytest.mark.django_db
-    @pytest.mark.current_dev
     def test_direct_relation(self) -> None:
         orig: Artist = Artist.create_from_api_data(**data.API_DATA[2])
         dest: Artist = Artist.create_from_api_data(**data.API_DATA[3])
@@ -87,7 +86,6 @@ class TestArtist:
         assert path == (orig, dest)
 
     @pytest.mark.django_db
-    @pytest.mark.current_dev
     def test_relation_with_one_node(self) -> None:
         orig: Artist = Artist.create_from_api_data(**data.API_DATA[3])
         middle: Artist = Artist.create_from_api_data(**data.API_DATA[2])
@@ -96,20 +94,17 @@ class TestArtist:
         assert path == (orig, middle, dest)
 
     @pytest.mark.django_db
-    @pytest.mark.current_dev
     def test_no_relation(self) -> None:
         orig: Artist = Artist.create_from_api_data(**data.API_DATA[0])
         dest: Artist = Artist.create_from_api_data(**data.API_DATA[4])
-        path: Sequence[Artist] = orig.path_to(dest, nb_try=2)
+        path: Sequence[Artist] = orig.path_to(dest, nb_tryouts=20)
         assert path == ()
 
-    # @pytest.mark.django_db
-    # @pytest.mark.current_dev
-    # def test_relation_with_two_nodes(self) -> None:
-    #     # 6 > 4 > 3 > 5
-    #     orig: Artist = Artist.create_from_api_data(**data.API_DATA[5])
-    #     middle1: Artist = Artist.create_from_api_data(**data.API_DATA[3])
-    #     middle2: Artist = Artist.create_from_api_data(**data.API_DATA[2])
-    #     dest: Artist = Artist.create_from_api_data(**data.API_DATA[4])
-    #     path: Sequence[Artist] = orig.path_to(dest)
-    #     assert path == (orig, middle1, middle2, dest)
+    @pytest.mark.django_db
+    def test_relation_with_two_nodes(self) -> None:
+        orig: Artist = Artist.create_from_api_data(**data.API_DATA[5])
+        middle1: Artist = Artist.create_from_api_data(**data.API_DATA[3])
+        middle2: Artist = Artist.create_from_api_data(**data.API_DATA[2])
+        dest: Artist = Artist.create_from_api_data(**data.API_DATA[4])
+        path: Sequence[Artist] = orig.path_to(dest, nb_tryouts=10)
+        assert set(path) == {orig, middle1, middle2, dest}

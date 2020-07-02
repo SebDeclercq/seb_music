@@ -151,22 +151,65 @@ class Artist(models.Model):
         except Artist.DoesNotExist:
             return Artist.create_from_api(artist_name)
 
-    def path_to(self, other: Artist, nb_try: int = 1) -> Sequence[Artist]:
+    def path_to(
+        self, other: Artist, *, nb_tryouts: int = 1
+    ) -> Sequence[Artist]:
+        '''Search for a path between the Arist itself and an other Artist.
+
+        Params:
+            other: The Other Artist
+            nb_tryouts: An optional number of tryouts to run before giving up
+        
+        Return:
+            A tuple with all the Artist from the Artist itself
+            to the other Artist (or empty if no path found)
+        '''
         if self._has_direct_relation_with(other):
             return (self, other)
         else:
-            self._counter = 0
-            return self._search_relation(other, nb_try)
+            relation = self._search_relation(
+                other, counter=0, nb_tryouts=nb_tryouts
+            )
+            if relation:
+                if nb_tryouts <= 1:
+                    return relation
+                else:
+                    return (self, *relation)
+        return ()
 
     def _has_direct_relation_with(self, other: Artist) -> bool:
+        '''Check if the other Artist is directly linked to the Artist'''
         return any(
             a.api_id == other.api_id for a in self.similar_artists.all()
         )
 
-    def _search_relation(self, other: Artist, nb_try: int) -> Sequence[Artist]:
+    def _search_relation(
+        self, other: Artist, *, counter: int = 0, nb_tryouts: int = 1
+    ) -> Sequence[Artist]:
+        '''Search for a relation by iterating on the similar artists.
+        The search is limited by a fixed number of tryouts otherwise
+        it'll raise a recursion error.
+
+        Params:
+            other: The other Artist
+            counter: How many tryouts have already be done?
+            nb_tryouts: The number of tryouts to run
+
+        Return:
+            A tuple with all the Artist from the Artist itself
+            to the other Artist (or empty if no path found)
+        '''
         for sim in self.similar_artists.all():
             if sim._has_direct_relation_with(other):
                 return (self, sim, other)
+        if counter < nb_tryouts:
+            counter += 1
+            for sim in self.similar_artists.all():
+                relation = sim._search_relation(
+                    other, counter=counter, nb_tryouts=nb_tryouts
+                )
+                if relation:
+                    return relation
         return ()
 
 
