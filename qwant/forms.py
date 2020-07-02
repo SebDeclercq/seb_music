@@ -6,7 +6,6 @@ Author: SebDeclercq (https://www.github.com/SebDeclercq)
 from django import forms
 from django.utils.translation import gettext as _
 from qwant.music.models import Artist
-from qwant.music.utils import ArtistManager
 
 
 class SearchForm(forms.Form):
@@ -21,7 +20,7 @@ class SearchForm(forms.Form):
         Returns:
             The asked for Artist.
         '''
-        return ArtistManager.search_or_add(self.cleaned_data['artist_name'])
+        return Artist.search_or_add(self.cleaned_data['artist_name'])
 
     def reload(self) -> Artist:
-        return ArtistManager.add(self.cleaned_data['artist_name'])
+        return Artist.create_from_api(self.cleaned_data['artist_name'])

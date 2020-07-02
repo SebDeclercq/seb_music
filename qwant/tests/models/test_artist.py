@@ -60,6 +60,11 @@ names_and_data: Sequence[Tuple[str, APIData]] = (
     ),
 )
 
+names_and_id: Sequence[Tuple[str, int]] = (
+    ('Goldroom', 260920179),
+    ('Satin Jackets', 441748199),
+)
+
 
 @pytest.fixture(autouse=True)
 def special_char() -> SpecialChar:
@@ -122,3 +127,9 @@ class TestArtist:
     def test_str_slug(self, data: APIData) -> None:
         artist: Artist = Artist.create_from_api_data(**data)
         assert str(artist) == artist.slug
+
+    @pytest.mark.real_api_call
+    @pytest.mark.django_db
+    @pytest.mark.parametrize('name,api_id', names_and_id)
+    def test_get_one(self, name: str, api_id: int) -> None:
+        assert Artist.search_or_add(name).api_id == api_id

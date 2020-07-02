@@ -133,6 +133,24 @@ class Artist(models.Model):
         name = re.sub(r'-+', '-', name)
         return name
 
+    @staticmethod
+    def search_or_add(artist_name: str) -> Artist:
+        '''Get one Artist data from the API.
+        1. Check if the Artist is already in database and return it if it does
+        2. Call the API otherwise.
+ 
+        Params:
+            artist_name: The name of the Artist to find
+
+        Returns:
+            The found Artist
+        '''
+        try:
+            artist_slug: str = Artist.name_to_slug(artist_name)
+            return Artist.objects.get(slug=artist_slug)
+        except Artist.DoesNotExist:
+            return Artist.create_from_api(artist_name)
+
 
 class SpecialChar(models.Model):
     '''Class handling special character to convert in order to create

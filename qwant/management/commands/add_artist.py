@@ -10,7 +10,6 @@ from django.core.management.base import (
     CommandParser,
 )
 from qwant.music.models import Artist
-from qwant.music.utils import ArtistManager
 
 
 class Command(BaseCommand):
@@ -24,6 +23,6 @@ class Command(BaseCommand):
     def handle(self, *args: Any, **options: Any) -> None:
         try:
             artist_name = options['name']
-            ArtistManager.search_or_add(artist_name)
+            Artist.search_or_add(artist_name)
         except KeyError:
             raise CommandError('Provide an artist name w/ -n or --name')
