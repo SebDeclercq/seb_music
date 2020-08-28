@@ -32,5 +32,9 @@ urlpatterns: List[URLPattern] = [
             url=reverse_lazy('qwant:artists_list'), permanent=False
         ),
     ),
-    path(_('graphql/'), csrf_exempt(GraphQLView.as_view(graphiql=True))),
+    path(
+        _('graphql/'),
+        csrf_exempt(GraphQLView.as_view(graphiql=True)),
+        name=_('graphql'),
+    ),
 ]
