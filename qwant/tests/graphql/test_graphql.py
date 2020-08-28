@@ -24,6 +24,8 @@ class TestGraphQLModel:
                     name
                     slug
                     apiId
+                    url
+                    qwantUrl
                 }}
             }}
         ''',
@@ -32,6 +34,10 @@ class TestGraphQLModel:
         assert content['artist']['name'] == artist.name
         assert content['artist']['slug'] == artist.slug
         assert content['artist']['apiId'] == artist.api_id
+        assert content['artist']['url'].endswith(
+            f'qwant/music/artist/id/{artist.pk}'
+        )
+        assert content['artist']['qwantUrl'] == artist.qwant_url
 
     @pytest.mark.django_db
     @pytest.mark.parametrize('data', data.API_DATA)
