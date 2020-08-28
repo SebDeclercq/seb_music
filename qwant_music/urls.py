@@ -18,7 +18,9 @@ from django.contrib import admin
 from django.urls import include, path, reverse_lazy
 from django.urls.resolvers import URLPattern
 from django.utils.translation import gettext as _
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import RedirectView
+from graphene_django.views import GraphQLView
 
 
 urlpatterns: List[URLPattern] = [
@@ -27,7 +29,8 @@ urlpatterns: List[URLPattern] = [
     path(
         '',
         RedirectView.as_view(
-            url=reverse_lazy('qwant:artists_list'), permanent=True
+            url=reverse_lazy('qwant:artists_list'), permanent=False
         ),
     ),
+    path(_('graphql/'), csrf_exempt(GraphQLView.as_view(graphiql=True))),
 ]

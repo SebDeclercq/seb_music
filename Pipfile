@@ -12,6 +12,7 @@ pytest-django = "*"
 django-stubs = "*"
 pytest = "*"
 pytest-cov = "*"
+graphene-stubs = "*"
 
 [packages]
 django = "*"
@@ -20,6 +21,7 @@ django-filter = "*"
 django-heroku = "*"
 requests = "*"
 gunicorn = "*"
+graphene-django = "*"
 
 [requires]
 python_version = "3.8"
