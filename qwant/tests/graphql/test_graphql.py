@@ -54,3 +54,25 @@ class TestGraphQLModel:
         )
         artists: GraphQLResponse = resp.json()['data']['artists']
         assert {artist['slug'] for artist in artists} == slugs  # type: ignore
+
+    @pytest.mark.real_api_call
+    @pytest.mark.django_db
+    @pytest.mark.parametrize('name,artist', data.NAMES_AND_DATA)
+    def test_get_artist_from_api(
+        self, name: str, artist: APIData, graphql_client: GraphQLClient
+    ) -> None:
+        resp: HttpResponse = graphql_client(
+            f'''
+            query {{
+                artist(slug: "{artist['slug']}") {{
+                    name
+                    slug
+                    apiId
+                }}
+            }}
+            '''
+        )
+        content: GraphQLResponse = resp.json()['data']
+        assert content['artist']['name'] == name
+        assert content['artist']['slug'] == artist['slug']
+        assert content['artist']['apiId'] == artist['id']

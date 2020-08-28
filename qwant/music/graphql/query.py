@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any
+from typing import Any, Optional
 from django.db.models import Manager
 from graphql.execution.base import ResolveInfo
 import graphene
@@ -13,7 +13,7 @@ class Query(graphene.ObjectType):
 
     def resolve_artist(self, info: ResolveInfo, **kwargs: Any) -> Artist:
         if slug := kwargs.get('slug'):
-            return Artist.objects.get(slug=slug)
+            return Artist.search_or_add(slug)
 
     def resolve_artists(
         self, info: ResolveInfo, **kwargs: Any
