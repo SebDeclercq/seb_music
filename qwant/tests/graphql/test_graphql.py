@@ -13,7 +13,7 @@ GraphQLResponse = Dict[str, Any]
 class TestGraphQLModel:
     @pytest.mark.django_db
     @pytest.mark.parametrize('data', data.API_DATA)
-    def test_get_one_artist_basic_info(
+    def test_get_one_artist_basic_info_by_slug(
         self, data: APIData, graphql_client: GraphQLClient
     ) -> None:
         artist: Artist = Artist.create_from_api_data(**data)
@@ -21,6 +21,28 @@ class TestGraphQLModel:
             f'''
             query {{
                 artist(slug: "{artist.slug}") {{
+                    name
+                    slug
+                    apiId
+                }}
+            }}
+        ''',
+        )
+        content: GraphQLResponse = resp.json()['data']
+        assert content['artist']['name'] == artist.name
+        assert content['artist']['slug'] == artist.slug
+        assert content['artist']['apiId'] == artist.api_id
+
+    @pytest.mark.django_db
+    @pytest.mark.parametrize('data', data.API_DATA)
+    def test_get_one_artist_basic_info_by_name(
+        self, data: APIData, graphql_client: GraphQLClient
+    ) -> None:
+        artist: Artist = Artist.create_from_api_data(**data)
+        resp: HttpResponse = graphql_client(
+            f'''
+            query {{
+                artist(name: "{artist.name}") {{
                     name
                     slug
                     apiId

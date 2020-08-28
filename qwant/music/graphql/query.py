@@ -8,12 +8,14 @@ from .types import ArtistType
 
 
 class Query(graphene.ObjectType):
-    artist: graphene.Field = graphene.Field(ArtistType, slug=graphene.String())
+    artist: graphene.Field = graphene.Field(
+        ArtistType, slug=graphene.String(), name=graphene.String()
+    )
     artists: graphene.List = graphene.List(ArtistType)
 
     def resolve_artist(self, info: ResolveInfo, **kwargs: Any) -> Artist:
-        if slug := kwargs.get('slug'):
-            return Artist.search_or_add(slug)
+        if artist_name := (kwargs.get('slug') or kwargs.get('name')):
+            return Artist.search_or_add(artist_name)
 
     def resolve_artists(
         self, info: ResolveInfo, **kwargs: Any
