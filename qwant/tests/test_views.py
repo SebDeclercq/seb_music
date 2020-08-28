@@ -52,6 +52,17 @@ class TestArtistSearch:
         assert resp.status_code == 200
         assert 'qwant/artist_detail.html' in resp.template_name
 
+    @pytest.mark.real_api_call
+    @pytest.mark.django_db
+    def test_get_artist_no_result(self) -> None:
+        client: Client = Client()
+        resp: HttpResponse = client.post(
+            reverse('qwant:artist_search'),
+            {'artist_name': 'czfzpoeéçfnecze'},
+            follow=True,
+        )
+        assert resp.status_code == 404
+
 
 class TestArtistReload:
     @pytest.mark.real_api_call

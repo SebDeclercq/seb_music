@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Any, Type
 from django.db.models import Manager
-from django.http import HttpRequest, HttpResponse
+from django.http import Http404, HttpRequest, HttpResponse
 from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.views import generic
@@ -33,7 +33,12 @@ class ArtistSearchView(FormView):
         return super().form_valid(form)
 
     def get_success_url(self) -> HttpResponse:
-        return reverse('qwant:artist_detail', kwargs={'pk': self.artist.pk})
+        try:
+            return reverse(
+                'qwant:artist_detail', kwargs={'pk': self.artist.pk}
+            )
+        except AttributeError:
+            raise Http404('No artist found')
 
 
 class ArtistReloadView(FormView):
