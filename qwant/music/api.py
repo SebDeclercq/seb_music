@@ -4,7 +4,7 @@ Module for the class collecting data from the unofficial Qwant Music API.
 Author: SebDeclercq (https://www.github.com/SebDeclercq)
 '''
 import requests
-from typing import Dict, Final
+from typing import Dict, Final, Optional
 import json
 from qwant.music.types import APIData
 
@@ -15,7 +15,7 @@ class API:
     BASE_URL: Final[str] = 'https://api.qwant.com/music/artist/'
 
     @classmethod
-    def get(cls, slug: str) -> APIData:
+    def get(cls, slug: str) -> Optional[APIData]:
         '''Get an artist from the API based on a slug.
 
         Params:
@@ -26,4 +26,7 @@ class API:
         '''
         url: str = cls.BASE_URL + slug
         resp: requests.Response = requests.get(url)
-        return resp.json()
+        if 'error' in (data := resp.json()):
+            return None
+        else:
+            return data

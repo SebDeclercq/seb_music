@@ -78,6 +78,11 @@ class TestArtist:
     def test_get_one(self, name: str, api_id: int) -> None:
         assert Artist.search_or_add(name).api_id == api_id
 
+    @pytest.mark.real_api_call
+    @pytest.mark.django_db
+    def test_artist_does_not_exist(self) -> None:
+        assert Artist.search_or_add('czfzpoeéçfnecze') is None
+
     @pytest.mark.django_db
     def test_direct_relation(self) -> None:
         orig: Artist = Artist.create_from_api_data(**data.API_DATA[2])
@@ -108,3 +113,4 @@ class TestArtist:
         dest: Artist = Artist.create_from_api_data(**data.API_DATA[4])
         path: Sequence[Artist] = orig.path_to(dest, nb_tryouts=10)
         assert set(path) == {orig, middle1, middle2, dest}
+

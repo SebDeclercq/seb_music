@@ -53,8 +53,8 @@ class Artist(models.Model):
             The Artist found
         '''
         slug: str = cls.name_to_slug(name)
-        data: APIData = API.get(slug)
-        return cls.create_from_api_data(**data)
+        if data := API.get(slug):
+            return cls.create_from_api_data(**data)
 
     @classmethod
     def create_from_api_data(cls, **data: APIData) -> Artist:

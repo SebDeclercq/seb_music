@@ -21,8 +21,5 @@ class Command(BaseCommand):
         parser.add_argument('-n', '--name', type=str, help='The Artist name')
 
     def handle(self, *args: Any, **options: Any) -> None:
-        try:
-            artist_name = options['name']
-            Artist.search_or_add(artist_name)
-        except KeyError:
-            raise CommandError('Provide an artist name w/ -n or --name')
+        artist_name = options['name']
+        Artist.search_or_add(artist_name)

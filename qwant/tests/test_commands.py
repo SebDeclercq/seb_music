@@ -20,8 +20,10 @@ class TestAddArtistCommand:
 
     @pytest.mark.django_db
     def test_add_artist_no_name_fail(self) -> None:
-        with pytest.raises(CommandError):
-            call_command('add_artist', *[], **{'name': ''})
+        with pytest.raises(TypeError):
+            call_command('add_artist', *[], **{'unknown': ''})
+        with pytest.raises((CommandError, TypeError)):
+            call_command('add_artist', *[], **{})
 
 
 class TestDbSamplerCommand:
