@@ -107,3 +107,21 @@ class TestGraphQLModel:
         assert content['qwantArtist']['name'] == name
         assert content['qwantArtist']['slug'] == artist['slug']
         assert content['qwantArtist']['apiId'] == artist['id']
+
+    @pytest.mark.django_db
+    def test_artists_search_limit(self, graphql_client: GraphQLClient) -> None:
+        for artist_data in data.API_DATA:
+            Artist.create_from_api_data(**artist_data)
+        limit: int = 2
+        resp: HttpResponse = graphql_client(
+            '''
+            query($limit: Int) {
+                qwantArtists(limit: $limit) {
+                    slug
+                }
+            }
+            ''',
+            variables={'limit': limit},
+        )
+        content: GraphQLResponse = resp.json()['data']
+        assert len(content['qwantArtists']) == limit
