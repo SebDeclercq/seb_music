@@ -123,7 +123,7 @@ STATIC_URL = '/static/'
 
 
 GRAPHENE: Dict[str, str] = {
-    'SCHEMA': 'qwant.music.graphql.schema',
+    'SCHEMA': 'qwant_music.graphql.schema',
 }
 
 
