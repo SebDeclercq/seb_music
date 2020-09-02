@@ -20,7 +20,7 @@ class TestGraphQLModel:
         resp: HttpResponse = graphql_client(
             '''
             query($slug: String!) {
-                artist(slug: $slug) {
+                qwantArtist(slug: $slug) {
                     name
                     slug
                     apiId
@@ -32,13 +32,13 @@ class TestGraphQLModel:
             variables={'slug': artist.slug},
         )
         content: GraphQLResponse = resp.json()['data']
-        assert content['artist']['name'] == artist.name
-        assert content['artist']['slug'] == artist.slug
-        assert content['artist']['apiId'] == artist.api_id
-        assert content['artist']['url'].endswith(
+        assert content['qwantArtist']['name'] == artist.name
+        assert content['qwantArtist']['slug'] == artist.slug
+        assert content['qwantArtist']['apiId'] == artist.api_id
+        assert content['qwantArtist']['url'].endswith(
             f'qwant/music/artist/id/{artist.pk}'
         )
-        assert content['artist']['qwantUrl'] == artist.qwant_url
+        assert content['qwantArtist']['qwantUrl'] == artist.qwant_url
 
     @pytest.mark.django_db
     @pytest.mark.parametrize('data', data.API_DATA)
@@ -49,7 +49,7 @@ class TestGraphQLModel:
         resp: HttpResponse = graphql_client(
             '''
             query($name: String!) {
-                artist(name: $name) {
+                qwantArtist(name: $name) {
                     name
                     slug
                     apiId
@@ -59,9 +59,9 @@ class TestGraphQLModel:
             variables={'name': artist.name},
         )
         content: GraphQLResponse = resp.json()['data']
-        assert content['artist']['name'] == artist.name
-        assert content['artist']['slug'] == artist.slug
-        assert content['artist']['apiId'] == artist.api_id
+        assert content['qwantArtist']['name'] == artist.name
+        assert content['qwantArtist']['slug'] == artist.slug
+        assert content['qwantArtist']['apiId'] == artist.api_id
 
     @pytest.mark.django_db
     def test_get_all_artists(self, graphql_client: GraphQLClient) -> None:
@@ -74,7 +74,7 @@ class TestGraphQLModel:
         resp: HttpResponse = graphql_client(
             '''
             query {
-                artists {
+                qwantArtists {
                     name
                     slug
                     apiId
@@ -82,7 +82,7 @@ class TestGraphQLModel:
             }
             '''
         )
-        artists: GraphQLResponse = resp.json()['data']['artists']
+        artists: GraphQLResponse = resp.json()['data']['qwantArtists']
         assert {artist['slug'] for artist in artists} == slugs  # type: ignore
 
     @pytest.mark.real_api_call
@@ -94,7 +94,7 @@ class TestGraphQLModel:
         resp: HttpResponse = graphql_client(
             '''
             query($slug: String!) {
-                artist(slug: $slug) {
+                qwantArtist(slug: $slug) {
                     name
                     slug
                     apiId
@@ -104,6 +104,6 @@ class TestGraphQLModel:
             variables={'slug': artist['slug']},
         )
         content: GraphQLResponse = resp.json()['data']
-        assert content['artist']['name'] == name
-        assert content['artist']['slug'] == artist['slug']
-        assert content['artist']['apiId'] == artist['id']
+        assert content['qwantArtist']['name'] == name
+        assert content['qwantArtist']['slug'] == artist['slug']
+        assert content['qwantArtist']['apiId'] == artist['id']
