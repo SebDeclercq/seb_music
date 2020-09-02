@@ -1,5 +1,5 @@
 """
-WSGI config for qwant_music project.
+WSGI config for seb_music project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'qwant_music.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'seb_music.settings')
 
 application = get_wsgi_application()

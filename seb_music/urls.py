@@ -1,4 +1,4 @@
-"""qwant_music URL Configuration
+"""seb_music URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/3.0/topics/http/urls/
@@ -25,7 +25,10 @@ from graphene_django.views import GraphQLView
 
 urlpatterns: List[URLPattern] = [
     path(_('admin/'), admin.site.urls),
-    path(_('qwant/'), include('qwant.urls'),),
+    path(
+        _('qwant/'),
+        include('qwant.urls'),
+    ),
     path(
         '',
         RedirectView.as_view(
