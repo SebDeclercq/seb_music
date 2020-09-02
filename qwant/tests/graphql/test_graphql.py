@@ -18,17 +18,18 @@ class TestGraphQLModel:
     ) -> None:
         artist: Artist = Artist.create_from_api_data(**data)
         resp: HttpResponse = graphql_client(
-            f'''
-            query {{
-                artist(slug: "{artist.slug}") {{
+            '''
+            query($slug: String!) {
+                artist(slug: $slug) {
                     name
                     slug
                     apiId
                     url
                     qwantUrl
-                }}
-            }}
+                }
+            }
         ''',
+            variables={'slug': artist.slug},
         )
         content: GraphQLResponse = resp.json()['data']
         assert content['artist']['name'] == artist.name
@@ -46,15 +47,16 @@ class TestGraphQLModel:
     ) -> None:
         artist: Artist = Artist.create_from_api_data(**data)
         resp: HttpResponse = graphql_client(
-            f'''
-            query {{
-                artist(name: "{artist.name}") {{
+            '''
+            query($name: String!) {
+                artist(name: $name) {
                     name
                     slug
                     apiId
-                }}
-            }}
+                }
+            }
         ''',
+            variables={'name': artist.name},
         )
         content: GraphQLResponse = resp.json()['data']
         assert content['artist']['name'] == artist.name
@@ -71,14 +73,14 @@ class TestGraphQLModel:
                 slugs.add(similar['slug'])  # type: ignore
         resp: HttpResponse = graphql_client(
             '''
-        query {
-            artists {
-                name
-                slug
-                apiId
+            query {
+                artists {
+                    name
+                    slug
+                    apiId
+                }
             }
-        }
-        '''
+            '''
         )
         artists: GraphQLResponse = resp.json()['data']['artists']
         assert {artist['slug'] for artist in artists} == slugs  # type: ignore
@@ -90,15 +92,16 @@ class TestGraphQLModel:
         self, name: str, artist: APIData, graphql_client: GraphQLClient
     ) -> None:
         resp: HttpResponse = graphql_client(
-            f'''
-            query {{
-                artist(slug: "{artist['slug']}") {{
+            '''
+            query($slug: String!) {
+                artist(slug: $slug) {
                     name
                     slug
                     apiId
-                }}
-            }}
-            '''
+                }
+            }
+            ''',
+            variables={'slug': artist['slug']},
         )
         content: GraphQLResponse = resp.json()['data']
         assert content['artist']['name'] == name
